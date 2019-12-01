@@ -1,26 +1,24 @@
 import math
 
 def find_fuel(mass):
-	return math.floor(mass / 3) - 2
+    return math.floor(mass / 3) - 2
 
-f = open("../puzzledata/1day.txt", "r")
-lines = f.readlines()
+def input():
+    f = open("puzzledata/1day.txt", "r")
+    return [int(i) for i in f.readlines()]
+
+# Day 1
 total = 0
-
-for line in lines:
-	total += find_fuel(int(line))
+for mass in input():
+    total += find_fuel(mass)
 
 print("Total part 1:", total)
 
-f.seek(0)
-lines = f.readlines()
 total = 0
-
-for line in lines:
-	mass = int(line)
-	current_fuel = find_fuel(mass)
-	while current_fuel > 0:
-		total += current_fuel
-		current_fuel = find_fuel(current_fuel)
+for mass in input():
+    current_fuel = find_fuel(mass)
+    while current_fuel > 0:
+        total += current_fuel
+        current_fuel = find_fuel(current_fuel)
 
 print("Total part 2:", total)
