@@ -10,7 +10,11 @@ import (
 )
 
 func main() {
-	startTime := time.Now()
+	part1()
+	part2()
+}
+
+func getProgram() []int {
 	content, err := ioutil.ReadFile("./puzzledata/2day.txt")
 	if err != nil {
 		log.Fatal(err)
@@ -23,6 +27,12 @@ func main() {
 		n, _ := strconv.Atoi(s)
 		program[i] = n
 	}
+	return program
+}
+
+func part1() {
+	startTime := time.Now()
+	program := getProgram()
 
 	program[1] = 12
 	program[2] = 2
@@ -48,4 +58,8 @@ Loop:
 
 	end := time.Now()
 	fmt.Println("Elapsed time for part 1:", end.Sub(startTime))
+}
+
+func part2() {
+	fmt.Println("Still works")
 }
