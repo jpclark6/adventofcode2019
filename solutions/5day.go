@@ -64,23 +64,17 @@ Loop:
 			}
 		}
 
-		fmt.Println("Instruction:", instruction, "Opcode:", instructionOpcode)
-
 		switch instructionOpcode {
 		case "1":
-			fmt.Println("Op1. Current loc:", i, "Writing", valueOne, "+", valueTwo, "to location", loc)
 			program[loc] = valueOne + valueTwo
 			i += 4
 		case "2":
-			fmt.Println("Op1. Current loc:", i, "Writing", valueOne, "*", valueTwo, "to location", loc)
 			program[loc] = valueOne * valueTwo
 			i += 4
 		case "3":
-			fmt.Println("Op3. Writing 1 to location", program[i + 1])
 			program[program[i + 1]] = 1
 			i += 2
 		case "4":
-			fmt.Println("Opcode4. Loc:", i + 1, "Value:", valueOne)
 			fmt.Println("Output:", valueOne)
 			i += 2
 		case "9":
@@ -90,7 +84,6 @@ Loop:
 			println("Something went wrong... Found case:", instructionOpcode)
 			break Loop
 		}
-		fmt.Println()
 	}
 }
 
