@@ -38,19 +38,16 @@ func getProgram() []int {
 
 func runDiagnostic() {
 	program := getProgram()
-
 	i := 0
-	failsafe := 0
 Loop:
 	for {
 		instruction := append([]string{"0", "0", "0"}, strings.Split(strconv.Itoa(program[i]), "")...)
 
-		fmt.Println("instruction:", instruction)
-
 		instructionOpcode := instruction[len(instruction) - 1]
-		var valueOne, valueTwo int
+		var valueOne, valueTwo, loc int
 
-		if instructionOpcode == "1" || instructionOpcode == "2" {
+		if instructionOpcode == "1" || instructionOpcode == "2" || instructionOpcode == "4" {
+			loc = program[i + 3]
 			modeOne := instruction[len(instruction) - 3]
 			modeTwo := instruction[len(instruction) - 4]
 	
@@ -67,18 +64,24 @@ Loop:
 			}
 		}
 
+		fmt.Println("Instruction:", instruction, "Opcode:", instructionOpcode)
+
 		switch instructionOpcode {
 		case "1":
-			program[program[i+3]] = valueOne + valueTwo
+			fmt.Println("Op1. Current loc:", i, "Writing", valueOne, "+", valueTwo, "to location", loc)
+			program[loc] = valueOne + valueTwo
 			i += 4
 		case "2":
-			program[program[i+3]] = valueOne + valueTwo
+			fmt.Println("Op1. Current loc:", i, "Writing", valueOne, "*", valueTwo, "to location", loc)
+			program[loc] = valueOne * valueTwo
 			i += 4
 		case "3":
+			fmt.Println("Op3. Writing 1 to location", program[i + 1])
 			program[program[i + 1]] = 1
 			i += 2
 		case "4":
-			fmt.Println("Output:", program[program[i + 1]])
+			fmt.Println("Opcode4. Loc:", i + 1, "Value:", valueOne)
+			fmt.Println("Output:", valueOne)
 			i += 2
 		case "9":
 			println("Diagnostic complete")
@@ -87,12 +90,7 @@ Loop:
 			println("Something went wrong... Found case:", instructionOpcode)
 			break Loop
 		}
-
-		failsafe++
-		if failsafe > 100 {
-			fmt.Println("Failsafe")
-			break Loop
-		}
+		fmt.Println()
 	}
 }
 
