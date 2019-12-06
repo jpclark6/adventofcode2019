@@ -11,9 +11,11 @@ import (
 
 func main() {
 	startTime := time.Now()
-	part1()
+	fmt.Println("Part 1:")
+	runDiagnostic(3)
 	midTime := time.Now()
-	// part2()
+	fmt.Println("\nPart 2:")
+	runDiagnostic(5)
 	endTime := time.Now()
 	fmt.Println("Elapsed time for part 1:", midTime.Sub(startTime))
 	fmt.Println("Elapsed time for part 2:", endTime.Sub(midTime))
@@ -36,21 +38,21 @@ func getProgram() []int {
 	return programInt
 }
 
-func runDiagnostic() {
+func runDiagnostic(input int) {
 	program := getProgram()
 	i := 0
 Loop:
 	for {
 		instruction := append([]string{"0", "0", "0"}, strings.Split(strconv.Itoa(program[i]), "")...)
 
-		instructionOpcode := instruction[len(instruction) - 1]
+		instructionOpcode := instruction[len(instruction)-1]
 		var valueOne, valueTwo, loc int
 
-		if instructionOpcode == "1" || instructionOpcode == "2" || instructionOpcode == "4" {
-			loc = program[i + 3]
-			modeOne := instruction[len(instruction) - 3]
-			modeTwo := instruction[len(instruction) - 4]
-	
+		if strings.Contains("125678", instructionOpcode) {
+			loc = program[i+3]
+			modeOne := instruction[len(instruction)-3]
+			modeTwo := instruction[len(instruction)-4]
+
 			if modeOne == "0" {
 				valueOne = program[program[i+1]]
 			} else {
@@ -72,11 +74,44 @@ Loop:
 			program[loc] = valueOne * valueTwo
 			i += 4
 		case "3":
-			program[program[i + 1]] = 1
+			program[program[i+1]] = input
 			i += 2
 		case "4":
+			mode := instruction[len(instruction)-3]
+
+			if mode == "0" {
+				valueOne = program[program[i+1]]
+			} else {
+				valueOne = program[i+1]
+			}
 			fmt.Println("Output:", valueOne)
 			i += 2
+		case "5":
+			if valueOne != 0 {
+				i = valueTwo
+			} else {
+				i += 3
+			}
+		case "6":
+			if valueOne == 0 {
+				i = valueTwo
+			} else {
+				i += 3
+			}
+		case "7":
+			if valueOne < valueTwo {
+				program[loc] = 1
+			} else {
+				program[loc] = 0
+			}
+			i += 4
+		case "8":
+			if valueOne == valueTwo {
+				program[loc] = 1
+			} else {
+				program[loc] = 0
+			}
+			i += 4
 		case "9":
 			println("Diagnostic complete")
 			break Loop
@@ -86,21 +121,3 @@ Loop:
 		}
 	}
 }
-
-func part1() {
-	runDiagnostic()
-}
-
-// func part2() {
-// 	expectedOutput := 19690720
-// Loop:
-// 	for noun := 0; noun < 100; noun++ {
-// 		for verb := 0; verb < 100; verb++ {
-// 			output := fixProgram(noun, verb)
-// 			if output == expectedOutput {
-// 				fmt.Println("Answer to part 2:", 100 * noun + verb)
-// 				break Loop
-// 			}
-// 		}
-// 	}
-// }
