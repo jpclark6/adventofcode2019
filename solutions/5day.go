@@ -1,0 +1,115 @@
+package main
+
+import (
+	"fmt"
+	"io/ioutil"
+	"log"
+	"strconv"
+	"strings"
+	"time"
+)
+
+func main() {
+	startTime := time.Now()
+	part1()
+	midTime := time.Now()
+	// part2()
+	endTime := time.Now()
+	fmt.Println("Elapsed time for part 1:", midTime.Sub(startTime))
+	fmt.Println("Elapsed time for part 2:", endTime.Sub(midTime))
+	fmt.Println("Elapsed time for both parts:", endTime.Sub(startTime))
+}
+
+func getProgram() []int {
+	content, err := ioutil.ReadFile("./puzzledata/5day.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	data := string(content)
+	rawProgram := strings.Split(data, ",")
+	programInt := make([]int, len(rawProgram))
+
+	for i, s := range rawProgram {
+		n, _ := strconv.Atoi(s)
+		programInt[i] = n
+	}
+	return programInt
+}
+
+func runDiagnostic() {
+	program := getProgram()
+
+	i := 0
+	failsafe := 0
+Loop:
+	for {
+		instruction := append([]string{"0", "0", "0"}, strings.Split(strconv.Itoa(program[i]), "")...)
+
+		fmt.Println("instruction:", instruction)
+
+		instructionOpcode := instruction[len(instruction) - 1]
+		var valueOne, valueTwo int
+
+		if instructionOpcode == "1" || instructionOpcode == "2" {
+			modeOne := instruction[len(instruction) - 3]
+			modeTwo := instruction[len(instruction) - 4]
+	
+			if modeOne == "0" {
+				valueOne = program[program[i+1]]
+			} else {
+				valueOne = program[i+1]
+			}
+
+			if modeTwo == "0" {
+				valueTwo = program[program[i+2]]
+			} else {
+				valueTwo = program[i+2]
+			}
+		}
+
+		switch instructionOpcode {
+		case "1":
+			program[program[i+3]] = valueOne + valueTwo
+			i += 4
+		case "2":
+			program[program[i+3]] = valueOne + valueTwo
+			i += 4
+		case "3":
+			program[program[i + 1]] = 1
+			i += 2
+		case "4":
+			fmt.Println("Output:", program[program[i + 1]])
+			i += 2
+		case "9":
+			println("Diagnostic complete")
+			break Loop
+		default:
+			println("Something went wrong... Found case:", instructionOpcode)
+			break Loop
+		}
+
+		failsafe++
+		if failsafe > 100 {
+			fmt.Println("Failsafe")
+			break Loop
+		}
+	}
+}
+
+func part1() {
+	runDiagnostic()
+}
+
+// func part2() {
+// 	expectedOutput := 19690720
+// Loop:
+// 	for noun := 0; noun < 100; noun++ {
+// 		for verb := 0; verb < 100; verb++ {
+// 			output := fixProgram(noun, verb)
+// 			if output == expectedOutput {
+// 				fmt.Println("Answer to part 2:", 100 * noun + verb)
+// 				break Loop
+// 			}
+// 		}
+// 	}
+// }
