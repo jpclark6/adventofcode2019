@@ -12,8 +12,7 @@ def six_digit(password):
     password = str(password)
     if len(password) != 6:
         return False
-    else:
-        return True
+    return True
 
 def two_adjacent_part_1(password):
     password = str(password)
@@ -37,10 +36,6 @@ def two_adjacent_part_2(password):
         else:
             current_loc += 1
     return has_double
-
-    for i in range(len(password) - 1):
-        if password[i] == password[i + 1]:
-            has_pair = True
 
 def only_increases(password):
     password = str(password)
