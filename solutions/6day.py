@@ -21,7 +21,6 @@ class PlanetSystem:
             return None
         
 def input():
-    # f = open("puzzledata/6day_example.txt", "r")
     f = open("puzzledata/6day.txt", "r")
     return [i.split(")") for i in f.read().splitlines()]
 
@@ -38,3 +37,17 @@ for planet, parent in system.planets.items():
         current_planet = system.find_planet_parent(current_planet.name)
 
 print("Total for part 1:", total)
+
+part_2 = {'YOU': [], 'SAN': []}
+for planet, orbz in part_2.items():
+    current_planet = system.find_planet(planet)
+    while system.find_planet_parent(current_planet.name):
+        current_planet = system.find_planet_parent(current_planet.name)
+        orbz.append(current_planet.name)
+
+my_planets = set(part_2['YOU'])
+santa_planets = set(part_2['SAN'])
+
+planet_path_count = len(my_planets - santa_planets) + len(santa_planets - my_planets)
+
+print("Total for part 2:", planet_path_count)
