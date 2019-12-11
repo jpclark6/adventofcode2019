@@ -22,7 +22,7 @@ func main() {
 	feedback = true
 	ans = findMaxSignal(part2Amps, feedback)
 	fmt.Println("Answer to part 2:", ans)
-	
+
 	endTime := time.Now()
 	fmt.Println("Elapsed time for part 1:", midTime.Sub(startTime))
 	fmt.Println("Elapsed time for part 2:", endTime.Sub(midTime))
@@ -45,96 +45,96 @@ func getProgram() []int {
 	return programInt[0:len(programInt) - 1]
 }
 
-func runIntCode(input []int, program []int) (int, []int) {
-	var output int
-	i := 0
-Loop:
-	for {
-		instruction := append([]string{"0", "0", "0"}, strings.Split(strconv.Itoa(program[i]), "")...)
-		instructionOpcode := instruction[len(instruction)-1]
-		var valueOne, valueTwo, loc int
+// func runIntCode(input []int, program []int) (int, []int) {
+// 	var output int
+// 	i := 0
+// Loop:
+// 	for {
+// 		instruction := append([]string{"0", "0", "0"}, strings.Split(strconv.Itoa(program[i]), "")...)
+// 		instructionOpcode := instruction[len(instruction)-1]
+// 		var valueOne, valueTwo, loc int
 
-		if strings.Contains("125678", instructionOpcode) {
-			loc = program[i+3]
-			modeOne := instruction[len(instruction)-3]
-			modeTwo := instruction[len(instruction)-4]
+// 		if strings.Contains("125678", instructionOpcode) {
+// 			loc = program[i+3]
+// 			modeOne := instruction[len(instruction)-3]
+// 			modeTwo := instruction[len(instruction)-4]
 
-			if modeOne == "0" {
-				valueOne = program[program[i+1]]
-			} else {
-				valueOne = program[i+1]
-			}
+// 			if modeOne == "0" {
+// 				valueOne = program[program[i+1]]
+// 			} else {
+// 				valueOne = program[i+1]
+// 			}
 
-			if modeTwo == "0" {
-				valueTwo = program[program[i+2]]
-			} else {
-				valueTwo = program[i+2]
-			}
-		}
+// 			if modeTwo == "0" {
+// 				valueTwo = program[program[i+2]]
+// 			} else {
+// 				valueTwo = program[i+2]
+// 			}
+// 		}
 
-		switch instructionOpcode {
-		case "1":
-			program[loc] = valueOne + valueTwo
-			i += 4
-		case "2":
-			program[loc] = valueOne * valueTwo
-			i += 4
-		case "3":
-			var nextInput int
-			if len(input) > 1 {
-				nextInput, input = input[0], input[1:]
-			} else {
-				nextInput = input[0]
-			}
-			program[program[i+1]] = nextInput
-			i += 2
-		case "4":
-			mode := instruction[len(instruction)-3]
+// 		switch instructionOpcode {
+// 		case "1":
+// 			program[loc] = valueOne + valueTwo
+// 			i += 4
+// 		case "2":
+// 			program[loc] = valueOne * valueTwo
+// 			i += 4
+// 		case "3":
+// 			var nextInput int
+// 			if len(input) > 1 {
+// 				nextInput, input = input[0], input[1:]
+// 			} else {
+// 				nextInput = input[0]
+// 			}
+// 			program[program[i+1]] = nextInput
+// 			i += 2
+// 		case "4":
+// 			mode := instruction[len(instruction)-3]
 
-			if mode == "0" {
-				valueOne = program[program[i+1]]
-			} else {
-				valueOne = program[i+1]
-			}
-			// fmt.Println("Output:", valueOne)
-			output = valueOne
-			i += 2
-		case "5":
-			if valueOne != 0 {
-				i = valueTwo
-			} else {
-				i += 3
-			}
-		case "6":
-			if valueOne == 0 {
-				i = valueTwo
-			} else {
-				i += 3
-			}
-		case "7":
-			if valueOne < valueTwo {
-				program[loc] = 1
-			} else {
-				program[loc] = 0
-			}
-			i += 4
-		case "8":
-			if valueOne == valueTwo {
-				program[loc] = 1
-			} else {
-				program[loc] = 0
-			}
-			i += 4
-		case "9":
-			// fmt.Println("Diagnostic complete:", output)
-			return output, program
-		default:
-			println("Something went wrong... Found case:", instructionOpcode, "loc", loc)
-			break Loop
-		}
-	}
-	return 0, program
-}
+// 			if mode == "0" {
+// 				valueOne = program[program[i+1]]
+// 			} else {
+// 				valueOne = program[i+1]
+// 			}
+// 			// fmt.Println("Output:", valueOne)
+// 			output = valueOne
+// 			i += 2
+// 		case "5":
+// 			if valueOne != 0 {
+// 				i = valueTwo
+// 			} else {
+// 				i += 3
+// 			}
+// 		case "6":
+// 			if valueOne == 0 {
+// 				i = valueTwo
+// 			} else {
+// 				i += 3
+// 			}
+// 		case "7":
+// 			if valueOne < valueTwo {
+// 				program[loc] = 1
+// 			} else {
+// 				program[loc] = 0
+// 			}
+// 			i += 4
+// 		case "8":
+// 			if valueOne == valueTwo {
+// 				program[loc] = 1
+// 			} else {
+// 				program[loc] = 0
+// 			}
+// 			i += 4
+// 		case "9":
+// 			// fmt.Println("Diagnostic complete:", output)
+// 			return output, program
+// 		default:
+// 			println("Something went wrong... Found case:", instructionOpcode, "loc", loc)
+// 			break Loop
+// 		}
+// 	}
+// 	return 0, program
+// }
 
 func runIntCodeRepeat(input []int, program []int, loc int) (int, []int, bool, int) {
 	var output int
@@ -257,7 +257,7 @@ func amplifySignal(ampValues []int, feedback bool) int {
 		}
 
 		if !feedback {
-			currentOutput, currentProgram = runIntCode(programInputs, currentProgram)
+			currentOutput, currentProgram, finished, programLocations[0] = runIntCodeRepeat(programInputs, currentProgram, 0)
 		} else {
 			// fmt.Println("Before. programInputs:", programInputs, "program", programs[i % qtyAmplifiers], "location", programLocations[i % qtyAmplifiers])
 			currentOutput, programs[i % qtyAmplifiers], finished, programLocations[i % qtyAmplifiers] = runIntCodeRepeat(programInputs, programs[i % qtyAmplifiers], programLocations[i % qtyAmplifiers])
