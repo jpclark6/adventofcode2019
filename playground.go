@@ -2,13 +2,12 @@ package main
 
 import (
 	"fmt"
-	"strings"
+	// "strings"
 )
 
 func main() {
-	x := "z"
-
-	nst := append([]string{"0", "0", "0"}, strings.Split(x, "")...)
-	fmt.Println("X:", nst[len(nst) - 1])
+	var x []int
+	x = nil
+	fmt.Println(len(x))
 
 }
