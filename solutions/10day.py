@@ -15,22 +15,25 @@ class Asteroid:
     def add_rock(self):
         self.asteroids_in_sight += 1
 
+def get_file():
+    return './puzzledata/10day.txt'
+
 def read_file():
-    lines = open('./puzzledata/10day.txt').read().splitlines()
+    lines = open(get_file()).read().splitlines()
     asteroids = []
     for y, line in enumerate(lines):
         for x, space in enumerate(line):
             if space == "#":
-                asteroids.append(Asteroid(x + 1, len(lines) - y))
+                asteroids.append(Asteroid(x, y))
     return asteroids
 
 def space_width():
-    lines = open('./puzzledata/10day.txt').read().splitlines()
+    lines = open(get_file()).read().splitlines()
     # print("Width", len(lines[0]))
     return len(lines[0])
 
 def space_height():
-    lines = open('./puzzledata/10day.txt').read().splitlines()
+    lines = open(get_file()).read().splitlines()
     # print("Height", len(lines))
     return len(lines)
 
@@ -55,18 +58,24 @@ def line_of_sight(location, asteroid, asteroids):
         if rock == location or rock == asteroid:
             continue
         delta_2 = find_delta(location, rock)
-        theta_2 = find_theta(delta_2)
         hypotenuse_2 = find_hypotenuse(delta_2)
-        # import pdb; pdb.set_trace()
-        if theta_1 == theta_2 and hypotenuse_2 < hypotenuse_1:
-            return False
+        if hypotenuse_2 < hypotenuse_1:
+            theta_2 = find_theta(delta_2)
+            if theta_1 == theta_2:
+                return False
     return True
 
 def find_max_asteroids(asteroids):
+    current_max = 0
     for asteroid in asteroids:
-        for rock in asteroids:
+        for num, rock in enumerate(asteroids):
             if line_of_sight(asteroid, rock, asteroids):
                 asteroid.add_rock()
+            if asteroid.asteroids_in_sight + (len(asteroids) - num)  < current_max:
+                continue
+        if asteroid.asteroids_in_sight > current_max:
+            current_max = asteroid.asteroids_in_sight
+
     max = {
         "visible": 0, 
         "location": {"x": 0, "y": 0}
@@ -74,12 +83,14 @@ def find_max_asteroids(asteroids):
     for asteroid in asteroids:
         if asteroid.asteroids_in_sight > max["visible"]:
             max["visible"] = asteroid.asteroids_in_sight
-            max["location"]["x"] = space_width() - asteroid.x - 1
-            max["location"]["y"] = space_height() - asteroid.y + 1
-    # space_width()
-    # space_height()
+            max["location"]["x"] = asteroid.x
+            max["location"]["y"] = asteroid.y
     return max
 
 asteroids = read_file()
-asteroid = find_max_asteroids(asteroids)
+# asteroid = find_max_asteroids(asteroids)
+# part 1 answer
+# {'visible': 334, 'location': {'x': 23, 'y': 20}}
 print(asteroid)
+
+# import pdb; pdb.set_trace()
