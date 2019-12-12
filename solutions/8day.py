@@ -34,8 +34,9 @@ data = input()
 
 
 def find_fewest_0_layer_multi_1_by_2(image):
-    fewest = len(image[0][0]) * len(image[0])
-    fewest_layer = -1
+    wide = len(image[0][0])
+    tall = len(image[0])
+    fewest = wide * tall
     for i, layer in enumerate(image):
         pixels = [pixel for row in layer for pixel in row]
         num_zeros = pixels.count(0)
@@ -46,7 +47,32 @@ def find_fewest_0_layer_multi_1_by_2(image):
     pixels = [pixel for row in image[fewest_layer] for pixel in row]
     return pixels.count(1) * pixels.count(2)
 
+def print_image(image):
+    wide = len(image[0][0])
+    tall = len(image[0])
+    final_image = [[-1 for _ in range(wide)] for _ in range(tall)]
+
+    for l, layer in enumerate(image):
+        for r, row in enumerate(layer):
+            for p, pixel in enumerate(row):
+                if final_image[r][p] != -1 or pixel == 2:
+                    pass
+                else:
+                    if pixel == 1:
+                        final_image[r][p] = "X"
+                    elif pixel == 0:
+                        final_image[r][p] = " "
+    
+    print("\n")
+    for row in final_image:
+        print("".join(row))
+    print("\n")
+    # import pdb; pdb.set_trace()
+
+
 
 image = slice_layers(wide, tall, data)
 ans_part_1 = find_fewest_0_layer_multi_1_by_2(image)
 print("Part 1 answer", ans_part_1)
+
+print_image(image)
