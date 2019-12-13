@@ -6,15 +6,7 @@ import (
 )
 
 func main() {
-	var x = map[int]bool{
-		1: true,
-		2: true,
-	}
+	var x = "hello"
 
-	if x[1] {
-		fmt.Println("Yes")
-	}
-	if x[5] {
-		fmt.Println("No")
-	}
+	fmt.Printf("%s", x[3])
 }
