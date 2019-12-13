@@ -22,7 +22,7 @@ class Asteroid:
         self.asteroids_in_sight += 1
 
 def get_file():
-    return './puzzledata/10day_example.txt'
+    return './puzzledata/10day.txt'
 
 def read_file():
     lines = open(get_file()).read().splitlines()
@@ -73,12 +73,10 @@ def destroy_asteroid(location, theta, asteroids):
     if len(possible_asteroids) == 0:
         return asteroids, False, None
 
-    possible_asteroids.sort(key=lambda x: x["asteroid"].distance)
-    
     destroy = possible_asteroids[0]["asteroid"]
     asteroid_number = possible_asteroids[0]["num"]
 
-    print("Destroying asteroid (", destroy.x, destroy.y, ") at", destroy.theta)
+    # print("Destroying asteroid (", destroy.x, destroy.y, ") at", destroy.theta)
     del asteroids[asteroid_number]
     return asteroids, True, destroy
 
@@ -89,21 +87,22 @@ def destroy_asteroids(x_loc, y_loc, theta, quantity, asteroids):
             asteroid_number = i
             break
     del asteroids[asteroid_number]
+
     for asteroid in asteroids:
         delta = find_delta(location, asteroid)
-        delta['y'] = - delta['y']
         asteroid.theta = find_theta(delta)
         asteroid.distance = find_distance(delta)
+    asteroids.sort(key=lambda x: (x.theta, x.distance))
     
     destroyed = 0
     while destroyed < quantity:
         asteroids, bomb, dead = destroy_asteroid(location, theta, asteroids)
         if bomb:
             destroyed += 1
-            # print("^number", destroyed)
             if destroyed == 200:
                 print("200th destroyed at", dead.x, dead.y)
                 print("Part 2 answer:", dead.x * 100 + dead.y)
+
         theta -= .0001
         if theta - .0001 < - pi:
             theta += 2 * pi
@@ -111,10 +110,4 @@ def destroy_asteroids(x_loc, y_loc, theta, quantity, asteroids):
 asteroids = read_file()
 max_asteroid= find_max_asteroids(asteroids)
 print("Part 1 answer at location",  max_asteroid.x,  max_asteroid.y, "qty:",  max_asteroid.asteroids_in_sight)
-destroy_asteroids(max_asteroid.x,  max_asteroid.y, pi / 2, 20, asteroids)
-
-# 8, 1
-# 9, 0
-# 9, 1
-# 10, 0
-# 9, 2
+destroy_asteroids(max_asteroid.x,  max_asteroid.y, pi / 2, 200, asteroids)
