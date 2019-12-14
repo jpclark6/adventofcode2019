@@ -11,7 +11,19 @@ import (
 
 func main() {
 	// startTime := time.Now()
-	fmt.Println("Solution to part 1 here")
+	program := getProgram("./puzzledata/13day.txt")
+	input := []int{0}
+	cursorLocation := 0
+	rBase := 0
+	input, program, _, cursorLocation, rBase = runIntCode(input, program, cursorLocation, rBase)
+	tileCount := 0
+	for i := 2; i < len(program); i += 3 {
+		if input[i] == 2 {
+			tileCount++
+		}
+	} 
+	fmt.Println("Answer to part 1:", tileCount)
+	
 	// midTime := time.Now()
 
 	// endTime := time.Now()
