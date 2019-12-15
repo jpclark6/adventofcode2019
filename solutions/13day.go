@@ -6,11 +6,116 @@ import (
 	"log"
 	"strconv"
 	"strings"
-	// "time"
+	"time"
 )
 
 func main() {
-	// startTime := time.Now()
+	startTime := time.Now()
+
+	tileCount := part1()
+	fmt.Println("The answer to part 1:", tileCount)
+
+	midTime := time.Now()
+
+	score := part2()
+	fmt.Println("The answer to part 2:", score)
+
+	endTime := time.Now()
+	fmt.Println("Elapsed time for part 1:", midTime.Sub(startTime))
+	fmt.Println("Elapsed time for part 2:", endTime.Sub(midTime))
+	fmt.Println("Elapsed time for both parts:", endTime.Sub(startTime))
+}
+
+func part2() int {
+	program := getProgram("./puzzledata/13day.txt")
+	program[0] = 2
+	initialInput := []int{}
+	cursorLocation := 0
+	rBase := 0
+	var output []int
+	output, program, _, cursorLocation, rBase = runIntCode(initialInput, program, cursorLocation, rBase)
+	paddleLocation := parsePaddle(output)
+	ballLocation := parseBall(output)
+	var input []int
+	var score int
+
+	for i := 0; ; i++ {
+		if paddleLocation[0] < ballLocation[0] {
+			input = []int{1}
+		} else if paddleLocation[0] > ballLocation[0] {
+			input = []int{-1}
+		} else {
+			input = []int{0}
+		}
+
+		output, program, _, cursorLocation, rBase = runIntCode(input, program, cursorLocation, rBase)
+		if parsePaddle(output)[1] != 0 {
+			paddleLocation = parsePaddle(output)
+		}
+		ballLocation = parseBall(output)
+		newScore := parseScore(output)
+		if newScore > 0 {
+			score = newScore
+		}
+		if ballLocation[0] == 0 {
+			break
+		}
+	}
+	return score
+}
+
+func parseTiles(output []int) map[string]bool {
+	tileLocation := make(map[string]bool)
+	for i := 2; i < len(output); i += 3 {
+		xLoc := output[i-2]
+		yLoc := output[i-1]
+		xyKey := strconv.Itoa(xLoc) + "," + strconv.Itoa(yLoc)
+		if output[i] == 2 {
+			tileLocation[xyKey] = true
+		}
+	}
+	return tileLocation
+}
+
+func parsePaddle(output []int) []int {
+	paddleLocation := []int{0, 0}
+	for i := 2; i < len(output); i += 3 {
+		xLoc := output[i-2]
+		yLoc := output[i-1]
+		if output[i] == 3 {
+			paddleLocation[0] = xLoc
+			paddleLocation[1] = yLoc
+		}
+	}
+	return paddleLocation
+}
+
+func parseScore(output []int) (score int) {
+	score = 0
+	for i := 2; i < len(output); i += 3 {
+		xLoc := output[i-2]
+		yLoc := output[i-1]
+		if xLoc == -1 && yLoc == 0 {
+			score = output[i]
+		}
+	}
+	return score
+}
+
+func parseBall(output []int) []int {
+	ballLocation := []int{0, 0}
+	for i := 2; i < len(output); i += 3 {
+		xLoc := output[i-2]
+		yLoc := output[i-1]
+		if output[i] == 4 {
+			ballLocation[0] = xLoc
+			ballLocation[1] = yLoc
+		}
+	}
+	return ballLocation
+}
+
+func part1() int {
 	program := getProgram("./puzzledata/13day.txt")
 	input := []int{0}
 	cursorLocation := 0
@@ -21,15 +126,8 @@ func main() {
 		if input[i] == 2 {
 			tileCount++
 		}
-	} 
-	fmt.Println("Answer to part 1:", tileCount)
-	
-	// midTime := time.Now()
-
-	// endTime := time.Now()
-	// fmt.Println("Elapsed time for part 1:", midTime.Sub(startTime))
-	// fmt.Println("Elapsed time for part 2:", endTime.Sub(midTime))
-	// fmt.Println("Elapsed time for both parts:", endTime.Sub(startTime))
+	}
+	return tileCount
 }
 
 func getProgram(file string) map[int]int {
