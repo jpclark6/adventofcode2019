@@ -27,23 +27,20 @@ func breatheOxygen() {
 		minutes++
 		currentQueue := queue
 		for i := 0; i < len(currentQueue); i++ {
-			currentLocation := parseLocation(currentQueue[i])
+			currentLocation := parseLocationKey(currentQueue[i])
 			visited[currentLocation] = true
 			path := currentQueue[i]
 			queue = queue[1:len(queue)]
-			input = parseQueue(path)
+			input = parsePathToInput(path)
 			program := getProgram("./puzzledata/15day.txt")
-			cursorLocation := 0
-			rBase := 0
-			output, _, _, _, _ = runIntCode(input, program, cursorLocation, rBase)
+			output, _, _, _, _ = runIntCode(input, program, 0, 0)
 			latestMove := output[len(output)-1]
 			if latestMove == 2 {
 				fmt.Println("Answer to part 1:", minutes, "steps")
 				minutes = -1
-				loc := parseLocation(path)
 				visited = make(map[string]bool)
 				queue = []string{path + "1", path + "2", path + "3", path + "4"}
-				visited[loc] = true
+				visited[parseLocationKey(path)] = true
 				break
 			} else if latestMove == 1 {
 				queue = addNewMoves(queue, path, visited)
@@ -56,52 +53,15 @@ func breatheOxygen() {
 	}
 }
 
-func findOxygen() (int, []int) {
-	visited := map[string]bool{"0,0": true}
-	queue := []string{"1", "2", "3", "4"}
-
-	output := []int{0}
-	input := []int{}
-	for {
-		currentQueue := queue
-		for i := 0; i < len(currentQueue); i++ {
-			currentLocation := parseLocation(currentQueue[i])
-			visited[currentLocation] = true
-			path := currentQueue[i]
-			queue = queue[1:len(queue)]
-			input = parseQueue(path)
-			program := getProgram("./puzzledata/15day.txt")
-			cursorLocation := 0
-			rBase := 0
-			output, _, _, _, _ = runIntCode(input, program, cursorLocation, rBase)
-			latestMove := output[len(output)-1]
-			if latestMove == 2 {
-				return len(input), input
-			} else if latestMove == 1 {
-				queue = addNewMoves(queue, path, visited)
-			}
-		}
+func parseLocationKey(path string) string {
+	p := strings.Split(path, "")
+	x, y := 0, 0
+	dir := map[string][]int{"1": []int{0, 1}, "2": []int{0, -1}, "3": []int{-1, 0}, "4": []int{1, 0}}
+	for i := 0; i < len(p); i++ {
+		x += dir[p[i]][0]
+		y += dir[p[i]][1]
 	}
-	humanQueue := []string{}
-	for i := 0; i < len(queue); i++ {
-		humanQueue = append(humanQueue, parseLocation(queue[i]))
-	}
-	// fmt.Println("Queue", humanQueue)
-
-	return 0, []int{}
-}
-
-func parseLocation(path string) string {
-	ppath := strings.Split(path, "")
-	x := 0
-	y := 0
-	dirs := map[string][]int{"1": []int{0, 1}, "2": []int{0, -1}, "3": []int{-1, 0}, "4": []int{1, 0}}
-	for i := 0; i < len(ppath); i++ {
-		x += dirs[ppath[i]][0]
-		y += dirs[ppath[i]][1]
-	}
-	xS := strconv.Itoa(x)
-	yS := strconv.Itoa(y)
+	xS, yS := strconv.Itoa(x), strconv.Itoa(y)
 	return xS + "," + yS
 }
 
@@ -109,14 +69,12 @@ func addNewMoves(queue []string, path string, visited map[string]bool) []string 
 	directions := []string{"1", "2", "3", "4"}
 	queuePaths := map[string]bool{}
 	for i := 0; i < len(queue); i++ {
-		queuePaths[parseLocation(queue[i])] = true
+		queuePaths[parseLocationKey(queue[i])] = true
 	}
-	// fmt.Println(queuePaths)
 	for i := 0; i < len(directions); i++ {
 		newPath := path + directions[i]
-		loc := parseLocation(newPath)
+		loc := parseLocationKey(newPath)
 		if !visited[loc] && !queuePaths[loc] {
-			// fmt.Println("loc", loc)
 			queue = append(queue, newPath)
 			queuePaths[loc] = true
 		}
@@ -124,7 +82,7 @@ func addNewMoves(queue []string, path string, visited map[string]bool) []string 
 	return queue
 }
 
-func parseQueue(path string) []int {
+func parsePathToInput(path string) []int {
 	list := strings.Split(path, "")
 	queue := []int{}
 	for i := 0; i < len(list); i++ {
@@ -133,20 +91,6 @@ func parseQueue(path string) []int {
 	}
 	return queue
 }
-
-// Breadth-First-Search( Maze m )
-//     EnQueue( m.StartNode )
-//     While Queue.NotEmpty
-//         c <- DeQueue
-//         If c is the goal
-//             Exit
-//         Else
-//             Foreach neighbor n of c
-//                 If n "Unvisited"
-//                     Mark n "Visited"
-//                     EnQueue( n )
-//             Mark c "Examined"
-// End procedure
 
 func getProgram(file string) map[int]int {
 	content, err := ioutil.ReadFile(file)
@@ -259,7 +203,6 @@ Loop:
 			cursorLocation += 2
 		case 4:
 			output = append(output, valueOne)
-			// fmt.Println("Output:", valueOne)
 			cursorLocation += 2
 		case 5:
 			if valueOne != 0 {
