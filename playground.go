@@ -2,15 +2,12 @@ package main
 
 import (
 	"fmt"
+	// "strconv"
 	// "strings"
 )
 
 func main() {
-	x := 0
-	for i := 0; i < 10; i++ {
-		if i == 5 {
-			x = i
-		}
-	}
+	path := []int{1, 2, 3, 4}
+	x := path[:len(path)-1]
 	fmt.Println(x)
 }
