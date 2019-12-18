@@ -28,16 +28,54 @@ def run_phases(signal, base_pattern, phases):
 
     print("Answer to part 1:", "".join([str(j) for j in signal[:8]]))
 
-def run_part_1():
+def get_data():
     data = open('./puzzledata/16day.txt').read()
+    return data
+
+def run_part_1():
+    data = get_data()
     # data = '80871224585914546619083218645595'
     # data = '12345678'
     signal = [int(d) for d in data]
     base_pattern = [0, 1, 0, -1]
 
-    d = time.time()
     run_phases(signal, base_pattern, 100)
-    e = time.time() - d
-    print(e, "seconds for part 1")
 
+
+def run_part_2(phases):
+    phases = phases
+    repeated = 10000
+    data = get_data()
+    signal = [int(d) for d in data]
+    offset = int(data[:7])
+    relavent_data_length = (len(data) * repeated - offset)
+    relavent_data = []
+    while len(relavent_data) < relavent_data_length:
+        relavent_data.extend(signal)
+    offset_from_start = len(relavent_data) - relavent_data_length
+    run_part_2_phases(relavent_data, phases, offset_from_start)
+
+def run_part_2_phases(data, phases, offset_from_start):
+    for x in range(phases):
+        if x % 10 == 0:
+            print(x, "%")
+        next_line = [0 for a in range(len(data))]
+        for i, digit in enumerate(data):
+            next_line[-1 - i] = (data[-1 - i] + next_line[-i]) % 10
+        data = next_line
+    print("Answer to part 2:", "".join([str(d) for d in data[offset_from_start: offset_from_start + 8]]))
+
+
+d = time.time()
 run_part_1()
+m = time.time()
+run_part_2(100)
+e = time.time()
+
+p1 = m - d
+p2 = e - m
+tot = e - d
+
+print("Part 1 took", p1, "seconds")
+print("Part 2 took", p2, "seconds")
+print("Total took", tot, "seconds")
