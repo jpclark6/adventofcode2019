@@ -6,14 +6,14 @@ import (
 	"log"
 	"strconv"
 	"strings"
-	"time"
+	// "time"
 )
 
 func main() {
-	start := time.Now()
+	// start := time.Now()
 	drawMaze()
-	end := time.Now()
-	fmt.Println("Total time:", end.Sub(start))
+	// end := time.Now()
+	// fmt.Println("Total time:", end.Sub(start))
 }
 
 func drawMaze() {
@@ -44,44 +44,58 @@ func drawMaze() {
 	}
 	fromTop--
 	totalAlignment := findAlignmentProduct(length, fromTop, grid)
-	fmt.Println("Total for part 1:", totalAlignment)
+	fmt.Println("Total for part 1:", totalAlignment, "\n ")
 	path := findPath(grid, length, fromTop)
-	fmt.Println(path)
-	input := "A,B,B,C,B,C,B,C,A,A\nL,6,R,8,L,4,R,8,L,12\nL,12,R,10,L,4\nL,12,L,6,L,4,L,4\nn\n"
-	rInput := []rune(input)
+	intCodeInput := buildInput(path)
+	program = getProgram("./puzzledata/17day.txt")
+	program[0] = 2
+	output, _, _, _, _ = runIntCode(intCodeInput, program, 0, 0)
+	fmt.Println("Part 2 answer:", output[len(output) - 1])
+}
+
+func buildInput(path string) []int {
+	remainingPath := path
+	a, remainingPath := findSegment(remainingPath)
+	b, remainingPath := findSegment(remainingPath)
+	c, _ := findSegment(remainingPath)
+
+	path = strings.Replace(path, a, "A", -1)
+	path = strings.Replace(path, b, "B", -1)
+	path = strings.Replace(path, c, "C", -1)
+
+	path += "\n" + a + "\n" + b + "\n" + c + "\n" + "n" + "\n"
+
+	fmt.Println("Path", path)
+
+	rInput := []rune(path)
 	inputIntCode := []int{}
 	for i := 0; i < len(rInput); i++ {
 		inputIntCode = append(inputIntCode, int(rInput[i]))
 	}
-	program2 := getProgram("./puzzledata/17day.txt")
-	program2[0] = 2
-	output, _, _, _, _ = runIntCode(inputIntCode, program2, 0, 0)
-	grid = make(map[string]int)
-	fromTop = 0
-	fromSide = 0
-	foundLength = false
-	length = 0
-	for i := 0; i < len(output); i++ {
-		switch output[i] {
-		case 10:
-			fromTop++
-			if !foundLength {
-				length = fromSide
-				foundLength = true
-			}
-			fromSide = 0
-			fmt.Println()
-		default:
-			xy := coordToKey(fromSide, fromTop)
-			grid[xy] = output[i]
-			r := rune(output[i])
-			fmt.Printf("%c", r)
-			fromSide++
+
+	return inputIntCode
+}
+
+func findSegment(path string) (segment string, newPath string) {
+	minLength := len(path)
+	for i := 6; i <= 21; i++ {
+		guess := string([]rune(path)[0:i])
+		pathCopy := path
+		pathCopy = strings.Replace(pathCopy, guess, "", -1)
+		if len(pathCopy) < minLength {
+			segment = guess
+			minLength = len(pathCopy)
+		} else {
+			guess := string([]rune(path)[0:i - 1])
+			path = strings.Replace(path, guess, "", -1)
+			path = strings.Replace(path, ",,", ",", -1)
+			path = strings.Trim(path, ",")
+			guess = strings.Trim(guess, ",")
+			return guess, strings.Replace(path, guess, "", -1)
 		}
 	}
-	fmt.Println(program2[0])
-	fmt.Println("Part 2 answer:", output[len(output) - 1])
-	fmt.Println(inputIntCode)
+	fmt.Println("Nope")
+	return "", ""
 }
 
 func findPath(grid map[string]int, length int, height int) (path string) {
@@ -112,7 +126,7 @@ func findPath(grid map[string]int, length int, height int) (path string) {
 		forwardSpaces = 0
 		direction, turnDirection, atDeadEnd = goTurn(robotLocation, direction, grid, length, height)
 		if atDeadEnd {
-			pathInstructions = string([]rune(pathInstructions)[0:len(pathInstructions) - 1])
+			pathInstructions = string([]rune(pathInstructions)[2:len(pathInstructions) - 1])
 			return pathInstructions
 		}
 		pathInstructions += turnDirection + ","
