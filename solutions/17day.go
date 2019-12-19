@@ -92,7 +92,6 @@ func findSegment(path string) (segment string, newPath string) {
 			return guess, strings.Replace(path, guess, "", -1)
 		}
 	}
-	fmt.Println("Nope")
 	return "", ""
 }
 
@@ -167,14 +166,11 @@ func findSideCoords(loc []int, direction string) [][]int {
 }
 
 func goStraight(loc []int, direction string, grid map[string]int, l int, h int) ([]int, bool) {
-	// for {
-		step := moveForwardOne(loc, direction)
-		nextLoc := []int{loc[0] + step[0], loc[1] + step[1]}
-		// if nextLoc[0] >= 0 && nextLoc[0] < l && nextLoc[1] >= 0 && nextLoc[1] < h {
-		if grid[coordToKey(nextLoc[0], nextLoc[1])] == 35 {
-			return nextLoc, false
-		}
-	// }
+	step := moveForwardOne(loc, direction)
+	nextLoc := []int{loc[0] + step[0], loc[1] + step[1]}
+	if grid[coordToKey(nextLoc[0], nextLoc[1])] == 35 {
+		return nextLoc, false
+	}
 	return loc, true
 }
 
