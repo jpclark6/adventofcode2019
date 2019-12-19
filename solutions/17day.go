@@ -6,14 +6,14 @@ import (
 	"log"
 	"strconv"
 	"strings"
-	// "time"
+	"time"
 )
 
 func main() {
-	// start := time.Now()
+	start := time.Now()
 	drawMaze()
-	// end := time.Now()
-	// fmt.Println("Total time:", end.Sub(start))
+	end := time.Now()
+	fmt.Println("Total time:", end.Sub(start))
 }
 
 func drawMaze() {
@@ -44,13 +44,13 @@ func drawMaze() {
 	}
 	fromTop--
 	totalAlignment := findAlignmentProduct(length, fromTop, grid)
-	fmt.Println("Total for part 1:", totalAlignment, "\n ")
+	fmt.Println("Total for part 1:", totalAlignment)
 	path := findPath(grid, length, fromTop)
 	intCodeInput := buildInput(path)
 	program = getProgram("./puzzledata/17day.txt")
 	program[0] = 2
 	output, _, _, _, _ = runIntCode(intCodeInput, program, 0, 0)
-	fmt.Println("Part 2 answer:", output[len(output) - 1])
+	fmt.Println("Total for part 2:", output[len(output) - 1])
 }
 
 func buildInput(path string) []int {
@@ -64,8 +64,6 @@ func buildInput(path string) []int {
 	path = strings.Replace(path, c, "C", -1)
 
 	path += "\n" + a + "\n" + b + "\n" + c + "\n" + "n" + "\n"
-
-	fmt.Println("Path", path)
 
 	rInput := []rune(path)
 	inputIntCode := []int{}
@@ -229,83 +227,6 @@ func keyToCoord(key string) (x int, y int) {
 	y, _ = strconv.Atoi(xy[1])
 	return x, y
 }
-
-
-// func drawMaze() {
-// 	visited := map[string]bool{"0,0": true}
-// 	queue := []string{"1", "2", "3", "4"}
-// 	output := []int{0}
-// 	input := []int{}
-// 	minutes := 0
-
-// 	for {
-// 		minutes++
-// 		currentQueue := queue
-// 		for i := 0; i < len(currentQueue); i++ {
-// 			currentLocation := parseLocationKey(currentQueue[i])
-// 			visited[currentLocation] = true
-// 			path := currentQueue[i]
-// 			queue = queue[1:len(queue)]
-// 			input = parsePathToInput(path)
-// 			program := getProgram("./puzzledata/15day.txt")
-// 			output, _, _, _, _ = runIntCode(input, program, 0, 0)
-// 			latestMove := output[len(output)-1]
-// 			if latestMove == 2 {
-// 				fmt.Println("Answer to part 1:", minutes, "steps")
-// 				minutes = -1
-// 				visited = make(map[string]bool)
-// 				queue = []string{path + "1", path + "2", path + "3", path + "4"}
-// 				visited[parseLocationKey(path)] = true
-// 				break
-// 			} else if latestMove == 1 {
-// 				queue = addNewMoves(queue, path, visited)
-// 			}
-// 		}
-// 		if len(queue) == 0 {
-// 			fmt.Println("Answer to part 2:", minutes, "minutes")
-// 			return
-// 		}
-// 	}
-// }
-
-// func parseLocationKey(path string) string {
-// 	p := strings.Split(path, "")
-// 	x, y := 0, 0
-// 	dir := map[string][]int{"1": []int{0, 1}, "2": []int{0, -1}, "3": []int{-1, 0}, "4": []int{1, 0}}
-// 	for i := 0; i < len(p); i++ {
-// 		x += dir[p[i]][0]
-// 		y += dir[p[i]][1]
-// 	}
-// 	xS, yS := strconv.Itoa(x), strconv.Itoa(y)
-// 	return xS + "," + yS
-// }
-
-// func addNewMoves(queue []string, path string, visited map[string]bool) []string {
-// 	directions := []string{"1", "2", "3", "4"}
-// 	queuePaths := map[string]bool{}
-// 	for i := 0; i < len(queue); i++ {
-// 		queuePaths[parseLocationKey(queue[i])] = true
-// 	}
-// 	for i := 0; i < len(directions); i++ {
-// 		newPath := path + directions[i]
-// 		loc := parseLocationKey(newPath)
-// 		if !visited[loc] && !queuePaths[loc] {
-// 			queue = append(queue, newPath)
-// 			queuePaths[loc] = true
-// 		}
-// 	}
-// 	return queue
-// }
-
-// func parsePathToInput(path string) []int {
-// 	list := strings.Split(path, "")
-// 	queue := []int{}
-// 	for i := 0; i < len(list); i++ {
-// 		direction, _ := strconv.Atoi(list[i])
-// 		queue = append(queue, direction)
-// 	}
-// 	return queue
-// }
 
 func getProgram(file string) map[int]int {
 	content, err := ioutil.ReadFile(file)
