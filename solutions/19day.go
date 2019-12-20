@@ -40,20 +40,20 @@ func part2() {
 	ship := 100
 	ship-- // 2 length ship would be start of ship + 1 to find edge, not 2
 	for {
-		foundBeam := false
-		for !foundBeam {
+		foundBeamTop := false
+		for !foundBeamTop {
 			y++
-			foundBeam = runInput(x, y)
+			foundBeamTop = runInput(x, y)
 		}
-		foundRight := false
-		for !foundRight {
+		foundBeamRight := false
+		for !foundBeamRight {
 			if !runInput(x+1, y) {
 				break
 			}
 			x++
 		}
 		if runInput(x-ship, y+ship) {
-			fmt.Println("Solution to part 2:", (x-ship)*10000+y, x, y)
+			fmt.Println("Solution to part 2:", (x-ship)*10000+y)
 			break
 		}
 		x++
