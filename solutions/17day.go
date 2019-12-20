@@ -50,7 +50,7 @@ func drawMaze() {
 	program = getProgram("./puzzledata/17day.txt")
 	program[0] = 2
 	output, _, _, _, _ = runIntCode(intCodeInput, program, 0, 0)
-	fmt.Println("Total for part 2:", output[len(output) - 1])
+	fmt.Println("Total for part 2:", output[len(output)-1])
 }
 
 func buildInput(path string) []int {
@@ -84,7 +84,7 @@ func findSegment(path string) (segment string, newPath string) {
 			segment = guess
 			minLength = len(pathCopy)
 		} else {
-			guess := string([]rune(path)[0:i - 1])
+			guess := string([]rune(path)[0 : i-1])
 			path = strings.Replace(path, guess, "", -1)
 			path = strings.Replace(path, ",,", ",", -1)
 			path = strings.Trim(path, ",")
@@ -97,7 +97,7 @@ func findSegment(path string) (segment string, newPath string) {
 
 func findPath(grid map[string]int, length int, height int) (path string) {
 	robotLocation := []int{0, 0}
-	for key, square := range(grid) {
+	for key, square := range grid {
 		if square == 94 {
 			x, y := keyToCoord(key)
 			robotLocation[0] = x
@@ -123,7 +123,7 @@ func findPath(grid map[string]int, length int, height int) (path string) {
 		forwardSpaces = 0
 		direction, turnDirection, atDeadEnd = goTurn(robotLocation, direction, grid, length, height)
 		if atDeadEnd {
-			pathInstructions = string([]rune(pathInstructions)[2:len(pathInstructions) - 1])
+			pathInstructions = string([]rune(pathInstructions)[2 : len(pathInstructions)-1])
 			return pathInstructions
 		}
 		pathInstructions += turnDirection + ","
@@ -190,8 +190,8 @@ func moveForwardOne(loc []int, direction string) []int {
 
 func findAlignmentProduct(length int, fromTop int, grid map[string]int) int {
 	totalAlignment := 0
-	for x := 1; x < length - 1; x++ {
-		for y := 1; y < fromTop - 1; y++ {
+	for x := 1; x < length-1; x++ {
+		for y := 1; y < fromTop-1; y++ {
 			if atIntersection(x, y, grid) {
 				totalAlignment += x * y
 			}
@@ -201,13 +201,13 @@ func findAlignmentProduct(length int, fromTop int, grid map[string]int) int {
 }
 
 func atIntersection(x int, y int, grid map[string]int) bool {
-	if grid[coordToKey(x, y)] == 35 && 
-		grid[coordToKey(x + 1, y)] == 35 &&
-		grid[coordToKey(x - 1, y)] == 35 &&
-		grid[coordToKey(x, y + 1)] == 35 &&
-		grid[coordToKey(x, y - 1)] == 35 {
-			return true
-		}
+	if grid[coordToKey(x, y)] == 35 &&
+		grid[coordToKey(x+1, y)] == 35 &&
+		grid[coordToKey(x-1, y)] == 35 &&
+		grid[coordToKey(x, y+1)] == 35 &&
+		grid[coordToKey(x, y-1)] == 35 {
+		return true
+	}
 	return false
 }
 

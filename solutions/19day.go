@@ -6,10 +6,18 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func main() {
+	s := time.Now()
 	part1()
+	m := time.Now()
+	part2()
+	e := time.Now()
+	fmt.Println("Part 1 took:", m.Sub(s))
+	fmt.Println("Part 2 took:", e.Sub(m))
+	fmt.Println("Total time:", e.Sub(s))
 }
 
 func part1() {
@@ -25,6 +33,41 @@ func part1() {
 		}
 	}
 	fmt.Println("Solution to part 1:", totalInBeam)
+}
+
+func part2() {
+	x, y := 5, 0
+	ship := 100
+	ship-- // 2 length ship would be start of ship + 1 to find edge, not 2
+	for {
+		foundBeam := false
+		for !foundBeam {
+			y++
+			foundBeam = runInput(x, y)
+		}
+		foundRight := false
+		for !foundRight {
+			if !runInput(x+1, y) {
+				break
+			}
+			x++
+		}
+		if runInput(x-ship, y+ship) {
+			fmt.Println("Solution to part 2:", (x-ship)*10000+y, x, y)
+			break
+		}
+		x++
+	}
+}
+
+func runInput(x int, y int) bool {
+	program := getProgram("./puzzledata/19day.txt")
+	input := []int{x, y}
+	output, _, _, _, _ := runIntCode(input, program, 0, 0)
+	if output[0] == 1 {
+		return true
+	}
+	return false
 }
 
 func getProgram(file string) map[int]int {
