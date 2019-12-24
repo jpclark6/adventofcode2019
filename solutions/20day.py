@@ -1,4 +1,4 @@
-import re
+import re, time
 
 class Puzzle:
     def __init__(self, file_name):
@@ -128,5 +128,8 @@ class Tile:
         ]
     
 
+s = time.time()
 puzzle = Puzzle('./puzzledata/20day.txt')
 puzzle.find_end()
+e = time.time()
+print("Time for part 1:", round(e - s, 3), "Seconds")
