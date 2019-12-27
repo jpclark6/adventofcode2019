@@ -25,6 +25,7 @@ func parseOutput(output []int) {
 	for i := 0; i < len(output); i++ {
 		fmt.Printf(string(output[i]))
 	}
+	fmt.Println(output[len(output)-1:])
 }
 
 func parseInput() []int {
@@ -36,36 +37,23 @@ func parseInput() []int {
 // WALK
 // `
 
-	inputArr := []string{"NOT C T",
-		"AND D T",
-		"NOT E J",
-		"AND T J",
+	inputArr := []string{
 		"NOT A T",
+		"NOT B J",
 		"OR T J",
-		"NOT E T",
-		"AND A T",
-		"AND B T",
-		"AND F T",
+		"NOT C T",
 		"OR T J",
 		"AND D J",
-		"NOT A T",
-		"OR T J",
+		"NOT I T",
+		"NOT T T",
+		"OR F T",
+		"AND E T",
+		"OR H T",
+		"AND T J",
 		"RUN",
-		""}
+		"",
+	}
 
-/*
-Jump if:
-Next 3 spaces are holes
-Out of 4 spaces, only 1 is land, jump to land there
-Out of 4 spaces after 4 spaces, if only 1 is land jump there
-*/
-// `NOT C T
-// AND D T
-// AND G T
-// NOT A J
-// OR T J
-// RUN
-// `
 	input := strings.Join(inputArr, "\n")
 	intRunes := []int{}
 	inputRunes := []rune(input)
