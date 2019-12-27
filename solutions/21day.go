@@ -6,18 +6,20 @@ import (
 	"log"
 	"strconv"
 	"strings"
-	// "time"
+	"time"
 )
 
 func main() {
+	s := time.Now()
 	part1()
+	e := time.Now()
+	fmt.Println("Finished in", e.Sub(s))
 }
 
 func part1() {
 	program := getProgram("./puzzledata/21day.txt")
 	input := parseInput()
 	output, _, _, _, _ := runIntCode(input, program, 0, 0)
-	// fmt.Println("SOLDUTIOND", output)
 	parseOutput(output)
 }
 
@@ -29,13 +31,14 @@ func parseOutput(output []int) {
 }
 
 func parseInput() []int {
-// 	input := 
-// `NOT C T
-// AND D T
-// NOT A J
-// OR T J
-// WALK
-// `
+	// // Part 1
+	// inputArr := []string{ 
+	// 	"NOT C T",
+	// 	"AND D T",
+	// 	"NOT A J",
+	// 	"OR T J",
+	// 	"WALK",
+	// 	"",
 
 	inputArr := []string{
 		"NOT A T",
