@@ -18,7 +18,7 @@ func main() {
 type puzzle struct {
 	grid      map[string]string
 	keys      map[string]bool
-	visited   map[string]int
+	visited   map[string]string
 	queue     []string
 	iteration int
 	newQueue	[]string
@@ -33,7 +33,7 @@ func copyPuzzle(puzzleMap puzzle) puzzle {
 
 	newGrid := map[string]string{}
 	newKeys := map[string]bool{}
-	newVisited := map[string]int{}
+	newVisited := map[string]string{}
 	nQueue := []string{}
 	newNewQueue := []string{}
 
@@ -63,6 +63,7 @@ func part1(filename string) {
 	data := string(file)
 	lines := strings.Split(data, "\n")
 	puzzleMap := puzzle{grid: map[string]string{}, keys: map[string]bool{}}
+	allKeys := []string{}
 
 	for row := 0; row < len(lines); row++ {
 		line := strings.Split(lines[row], "")
@@ -73,10 +74,94 @@ func part1(filename string) {
 			rchar := []rune(char)[0]
 			if unicode.IsLower(rchar) {
 				puzzleMap.keys[char] = false
+				allKeys = append(allKeys, string(rchar))
 			}
 		}
 	}
-	solve(puzzleMap)
+	keyPairs := makeKeyPairs(allKeys)
+	keyDistances := map[string]int{}
+	keyRequiredDoors := map[string]string{}
+	for i := 0; i < len(keyPairs); i++ {
+		kP := []rune(keyPairs[i])
+		if kP[0] > kP[1] {
+			kP[0], kP[1] = kP[1], kP[0]
+		}
+		keys := string(kP)
+		distance, doors := findDistance(puzzleMap, keys)
+		keyDistances[keys] = distance
+		keyRequiredDoors[keys] = doors
+		fmt.Println(keys, distance, doors)
+	}
+	// solve(puzzleMap)
+}
+
+func findDistance(puzzleMap puzzle, keys string) (distance int, doors string) {
+	startCoords := findKey(puzzleMap, []rune(keys)[0])
+	endCoords := findKey(puzzleMap, []rune(keys)[1])
+	loc := startCoords 	
+	puzzleMap.visited = map[string]string{startCoords: startCoords}
+	puzzleMap = checkAdjacent(puzzleMap, loc)
+	puzzleMap.queue = copyQueue(puzzleMap.newQueue)
+
+	for len(puzzleMap.queue) > 0 {
+		puzzleMap.iteration++
+		puzzleMap.newQueue = []string{}
+		
+		for j := 0; j < len(puzzleMap.queue); j++ {
+			if puzzleMap.queue[j] == endCoords {
+				distance = puzzleMap.iteration
+				doors = "tbd"
+				return distance, doors
+			}
+			puzzleMap = checkAdjacent(puzzleMap, puzzleMap.queue[j])
+			puzzleMap.visited[puzzleMap.queue[j]] = puzzleMap.iteration
+		}
+
+		puzzleMap.queue = copyQueue(puzzleMap.newQueue)
+	}
+	
+	return distance, doors
+}
+
+func checkAdjacent(puzzleMap puzzle, sLoc string) puzzle {
+	loc := parseKey(sLoc)
+	dir := directions()
+
+	for i := 0; i < len(dir); i++ {
+		nextKey := makeKey(loc[0] + dir[i][0], loc[1] + dir[i][1])
+		nextLoc := puzzleMap.grid[nextKey]
+		if nextLoc != "" && nextLoc != "#" {
+			if _, ok := puzzleMap.visited[nextKey]; !ok {
+				puzzleMap.newQueue = append(puzzleMap.newQueue, nextKey)
+			}
+		}
+	}
+	return puzzleMap
+}
+
+
+func findKey(puzzleMap puzzle, rKey rune) string {
+	key := string(rKey)
+	for loc, char := range puzzleMap.grid {
+		if char == key {
+			return loc
+		}
+	}
+	return "not found"
+}
+
+func makeKeyPairs(keys []string) []string {
+	fmt.Println(keys)
+	keyPairs := []string{}
+	for i := 0; i < len(keys) - 1; i++ {
+		for j := 0; j < len(keys); j++ {
+			if j > i {
+				keyPairs = append(keyPairs, keys[i] + keys[j])
+			}
+		}
+	}
+
+	return keyPairs
 }
 
 func isKey(loc string) bool {
@@ -111,6 +196,7 @@ func copyQueue(queue []string) []string {
 	}
 	return newQueue
 }
+
 func solve(puzzleMap puzzle) {
 	startCoords := findStart(puzzleMap)
 	loc := startCoords
