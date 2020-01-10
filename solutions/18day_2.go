@@ -44,32 +44,62 @@ func part1(filename string) {
 				puzzleMap.keys[char] = false
 				allKeys = append(allKeys, string(rchar))
 			}
-		}
+        }
 	}
+    allKeys = append(allKeys, "@")
 	keyPairs := makeKeyPairs(allKeys)
 	keyDistances := map[string]int{}
 	keyRequiredDoors := map[string][]string{}
+	keyFreeKeys := map[string][]string{}
 	for i := 0; i < len(keyPairs); i++ {
-		kP := []rune(keyPairs[i])
-		if kP[0] > kP[1] {
-			kP[0], kP[1] = kP[1], kP[0]
-		}
-		keys := string(kP)
-		distance, doors := findDistance(puzzleMap, keys)
+		keys := keyPairs[i]
+        distance, doors, freeKeys := findDistance(puzzleMap, keys)
 		keyDistances[keys] = distance
-		keyRequiredDoors[keys] = doors
-		fmt.Println(keys, distance, doors)
-	}
+        keyRequiredDoors[keys] = doors
+        keyFreeKeys[keys] = freeKeys
+		// fmt.Println(keys, distance, doors)
+    }
+    allKeys = allKeys[0:len(allKeys)-1]
+    // fmt.Println("keyDistances", keyDistances)
+    // fmt.Println("keyRequiredDoors", keyRequiredDoors)
+    fmt.Println("keyFreeKeys", keyFreeKeys)
+    // fmt.Println("keyPairs", keyPairs)
+
+    // solveKeyGraph(allKeys, keyPairs, keyDistances, keyRequiredDoors, keyFreeKeys)
 }
 
-func findDistance(puzzleMap puzzle, keys string) (distance int, doors []string) {
+func copyKeys(keys []string) []string {
+    remainingKeys := []string{}
+    for j := 0; j < len(keys); j++ {
+        remainingKeys = append(remainingKeys, keys[j])
+    }
+    return remainingKeys
+}
+
+func solveKeyGraph(keys []string, keyPairs []string, distances map[string]int, doors map[string][]string, freeKeys map[string][]string) {
+    initialQ := []string{}
+    for i := 0; i < len(keyPairs); i++ {
+        key := keyPairs[i]
+        if strings.Index(key, "@") >= 0 && len(doors[key]) == 0 {
+            initialQ = append(initialQ, key)
+            // fmt.Println("Key", key, "Doors", doors[key])
+        }
+    }
+    for i := 0; i < len(initialQ); i++ {
+        remainingKeys := copyKeys(keys)
+
+        fmt.Println(remainingKeys)
+    }
+}
+
+func findDistance(puzzleMap puzzle, keys string) (distance int, doors []string, freeKeys []string) {
 	startCoords := findKey(puzzleMap, []rune(keys)[0])
 	endCoords := findKey(puzzleMap, []rune(keys)[1])
 	loc := startCoords
-	puzzleMap.visited[startCoords] = startCoords
+    puzzleMap.visited = map[string]string{startCoords: startCoords}
+    puzzleMap.hereFrom = map[string]string{}
 	puzzleMap = checkAdjacent(puzzleMap, loc)
 	puzzleMap.queue = copyQueue(puzzleMap.newQueue)
-
 	for len(puzzleMap.queue) > 0 {
 		puzzleMap.iteration++
 		puzzleMap.newQueue = []string{}
@@ -85,9 +115,12 @@ func findDistance(puzzleMap puzzle, keys string) (distance int, doors []string) 
 					space := puzzleMap.grid[currentLoc]
 					if isWall(space) {
 						doors = append(doors, space)
-					}
+                    }
+                    if isKey(space) && !(currentLoc == startCoords || currentLoc == endCoords) {
+                        freeKeys = append(freeKeys, space)
+                    }
 					if currentLoc == startCoords {
-						return distance, doors
+						return distance, doors, freeKeys
 					}
 				}
 			}
@@ -98,7 +131,7 @@ func findDistance(puzzleMap puzzle, keys string) (distance int, doors []string) 
 		puzzleMap.queue = copyQueue(puzzleMap.newQueue)
 	}
 
-	return distance, doors
+	return distance, doors, freeKeys
 }
 
 func checkAdjacent(puzzleMap puzzle, sLoc string) puzzle {
@@ -133,7 +166,12 @@ func makeKeyPairs(keys []string) []string {
 	for i := 0; i < len(keys)-1; i++ {
 		for j := 0; j < len(keys); j++ {
 			if j > i {
-				keyPairs = append(keyPairs, keys[i]+keys[j])
+                kP := []rune(keys[i] + keys[j])
+                if kP[0] > kP[1] {
+                    kP[0], kP[1] = kP[1], kP[0]
+                }
+                keyPair := string(kP)
+				keyPairs = append(keyPairs, keyPair)
 			}
 		}
 	}

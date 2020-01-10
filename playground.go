@@ -3,14 +3,12 @@ package main
 import (
 	"fmt"
 	// "strconv"
-	// "strings"
+	"strings"
 )
 
 func main() {
-	x := []int{1, 2, 3, 4}
-	y := copy(x)
-	y[1] = 444
-	fmt.Println(x, y)
+	x := "hello"
+	fmt.Println(strings.Index(x, "j"))
 }
 
 func copy(li []int) []int {
